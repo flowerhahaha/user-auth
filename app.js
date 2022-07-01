@@ -17,6 +17,11 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
+// router: get login page
+app.get('/users/login', (req, res) => {
+  res.render('login')
+})
+
 // start and listen on the express server
 app.listen(3000, () => {
   console.log('App is running on http://localhost:3000')
