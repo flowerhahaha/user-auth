@@ -1,14 +1,13 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const stringType = {
-  type: String,
-  required: true,
-  default: false,
-  trim: true
-}
 
 const userSchema = new Schema ({
-  firstName: stringType,
+  firstName: {
+    type: String,
+    required: true,
+    default: false,
+    trim: true
+  },
   email: {
     type: String,
     required: true,
@@ -16,7 +15,13 @@ const userSchema = new Schema ({
     unique: true,
     trim: true
   },
-  password: stringType
+  password: {
+    type: String,
+    required: true,
+    default: false,
+    maxLength: 20,
+    minLength: 8,
+  }
 })
 
 // export User model for the users collection in mongoDB

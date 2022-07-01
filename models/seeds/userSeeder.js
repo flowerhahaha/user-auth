@@ -5,27 +5,27 @@ const users = [
  {
    firstName: 'Tony',
    email: 'tony@stark.com',
-   password: 'iamironman'
+   password: 'iamironman1'
  },
  {
    firstName: 'Steve',
    email: 'captain@hotmail.com',
-   password: 'icandothisallday'
+   password: 'icandothisallday1'
  },
  {
    firstName: 'Peter',
    email: 'peter@parker.com',
-   password: 'enajyram'
+   password: 'enajyram1'
  },
  {
    firstName: 'Natasha',
    email: 'natasha@gamil.com',
-   password: '*parol#@$!'
+   password: '*parol#@$!1'
  },
  {
    firstName: 'Nick',
    email: 'nick@shield.com',
-   password: 'password'
+   password: 'password1'
  }
 ]
 
