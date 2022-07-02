@@ -1,5 +1,11 @@
 <header class="header">
   <h1>Homepage</h1>
 </header>
+{{#if firstName}}
+<h1 class="mt-5 text-center">Welcome Back, {{ firstName }}</h1>
 
-<h1 class="mt-5 text-center">Welcome Back</h1>
+{{else}}
+<div class="text-center mt-5">
+  <a href="/users/login" class="btn btn-lg btn-primary mt-4">Login</a>
+</div>
+{{/if}}
