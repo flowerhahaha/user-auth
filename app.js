@@ -3,6 +3,7 @@ const express = require('express')
 const exphbs = require('express-handlebars')
 require('./config/mongoose')
 const User = require('./models/user')
+const cookieParser = require('cookie-parser')
 const app = express()
 
 // set template engine
@@ -12,6 +13,7 @@ app.set('view engine', 'hbs')
 // set middleware 
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 // router: get homepage
 app.get('/', (req, res) => {
@@ -24,7 +26,7 @@ app.get('/users/login', (req, res) => {
 })
 
 // router: post from /users/login
-app.post('/users/login', async (req, res) => {
+app.post('/users/login', async (req, res, next) => {
   const { email, password } = req.body
   try {
     const userData = await User.findOne({ email }).lean()
@@ -41,7 +43,8 @@ app.post('/users/login', async (req, res) => {
     // valid email and correct password
     res.redirect(`/${userData.firstName}`)
   } catch (e) {
-    console.log(e)
+    // async 500 error should be caught and passed to error handler by next(e)
+    next(e)
   }
 })
 
@@ -50,9 +53,16 @@ app.get('/:firstName', (req, res) => {
   const { firstName } = req.params
   User.exists({ firstName })
     .then(result => {
-      result ? res.render('index', { firstName }) : res.render('404')
+      const errMessage = 'The requested URL was not found on this server!'
+      result ? res.render('index', { firstName }) : res.render('error', { errMessage })
     })
-    .catch(e => console.log(e))
+})
+
+// error handling: catch error from server side
+app.use((err, req, res, next) => {
+  const errMessage = 'Sorry! Server is broken. We will fix it soon.'
+  console.log(err)
+  res.status(500).render('error', { errMessage })
 })
 
 // start and listen on the express server
