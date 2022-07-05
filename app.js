@@ -63,6 +63,14 @@ app.post('/users/login', async (req, res, next) => {
   }
 })
 
+// router: post from /users/logout
+app.post('/users/logout', (req, res) => {
+  const { userId } = req.signedCookies
+  req.session[userId] = 'notVerified'
+  res.clearCookie('userId')
+  res.redirect('/')
+})
+
 // router: get 404 error page
 app.get('*', (req, res) => {
   const errMessage = 'The requested URL was not found on this server!'

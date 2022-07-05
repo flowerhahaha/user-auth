@@ -3,6 +3,9 @@
 </header>
 {{#if firstName}}
 <h1 class="mt-5 text-center">Welcome Back, {{ firstName }}</h1>
+<form action="/users/logout" method="POST" class="mt-5 d-flex mx-auto">
+  <button class="btn-lg btn-primary mx-auto">Logout</button>
+</form>
 
 {{else}}
 <div class="text-center mt-5">
