@@ -4,6 +4,7 @@ const exphbs = require('express-handlebars')
 require('./config/mongoose')
 const User = require('./models/user')
 const cookieParser = require('cookie-parser')
+const session = require('express-session')
 const app = express()
 
 // set template engine
@@ -13,11 +14,23 @@ app.set('view engine', 'hbs')
 // set middleware 
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
+app.use(cookieParser(process.env.SIGN_COOKIE))
+app.use(session({
+  secret: process.env.SECRET_KEY,
+  resave: false,
+  saveUninitialized: true
+}))
 
 // router: get homepage
 app.get('/', (req, res) => {
-  res.render('index')
+  const { userId } = req.signedCookies
+  if (req.session[userId] !== 'isVerified') return res.render('index') 
+  User.findById(userId)
+    .then(result => {
+      if (!result) return res.render('index')
+      const { firstName } = result
+      res.render('index', { firstName })
+    })
 })
 
 // router: get login page
@@ -40,22 +53,20 @@ app.post('/users/login', async (req, res, next) => {
       const notFoundPassword = true
       return res.render('login', { notFoundPassword, email })
     }
-    // valid email and correct password
-    res.redirect(`/${userData.firstName}`)
+    // if valid email and correct password
+    res.cookie('userId', userData._id, { signed: true })
+    req.session[userData._id] = 'isVerified'
+    res.redirect('/')
   } catch (e) {
     // async 500 error should be caught and passed to error handler by next(e)
     next(e)
   }
 })
 
-// router: get user homepage
-app.get('/:firstName', (req, res) => {
-  const { firstName } = req.params
-  User.exists({ firstName })
-    .then(result => {
-      const errMessage = 'The requested URL was not found on this server!'
-      result ? res.render('index', { firstName }) : res.render('error', { errMessage })
-    })
+// router: get 404 error page
+app.get('*', (req, res) => {
+  const errMessage = 'The requested URL was not found on this server!'
+  res.status(404).render('error', { errMessage })
 })
 
 // error handling: catch error from server side
